@@ -29,18 +29,18 @@ private:
 // as well as „ TrafficLightPhase getCurrentPhase()“, where TrafficLightPhase is an enum that 
 // can be either „red“ or „green“. Also, add the private method „void cycleThroughPhases()“. 
 // Furthermore, there shall be the private member _currentPhase which can take „red“ or „green“ as its value. 
-
+enum class TrafficLightPhase { red, green };
 class TrafficLight: public TrafficObject
 {
 public:
-  enum class TrafficLightPhase { red, green };
     // constructor / desctructor
     TrafficLight();
+    ~TrafficLight();
     // getters / setters
     TrafficLightPhase getCurrentPhase();
     // typical behaviour methods
-void waitForGreen();
-void simulate();
+    void waitForGreen();
+    void simulate();
 
 private:
     // typical behaviour methods
