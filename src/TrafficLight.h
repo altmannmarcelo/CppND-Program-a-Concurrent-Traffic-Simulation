@@ -19,7 +19,7 @@ template <class T>
 class MessageQueue
 {
 public:
-  void send (TrafficLightPhase phase);
+  void send (T &&msg);
   TrafficLightPhase receive();
 private:
     std::deque<TrafficLightPhase> _queue;
@@ -56,6 +56,7 @@ private:
     std::condition_variable _condition;
     std::mutex _mutex;
     TrafficLightPhase _currentPhase;
+    MessageQueue<TrafficLightPhase> _queue;
 };
 
 #endif
