@@ -63,22 +63,41 @@ void TrafficLight::simulate()
 //virtual function which is executed in a thread
 void TrafficLight::cycleThroughPhases()
 {
-    // DONE FP.2a : Implement the function with an infinite loop that measures the time between two loop cycles 
-    // and toggles the current phase of the traffic light between red and green and sends an update method 
-    // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
-    // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
-    while(true)
+  // DONE FP.2a : Implement the function with an infinite loop that measures the time between two loop cycles 
+  // and toggles the current phase of the traffic light between red and green and sends an update method 
+  // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
+  // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
+
+  /* Init our random generation between 4 and 6 seconds */
+  std::random_device rd;
+  std::mt19937 eng(rd());
+  std::uniform_int_distribution<> distr(4, 6);
+
+  /* Initalize variables */
+  int cycle_duration = distr(eng); //Duration of a single simulation cycle in seconds, is randomly chosen
+  /* Init stop watch */
+  auto last_update = std::chrono::system_clock::now();
+  while(true)
+  {
+    /* Compute time difference to stop watch */
+    long time_since_last_update = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - last_update).count();
+
+    /* It is time to toggle our traffic light */
+    if (time_since_last_update >= cycle_duration)
     {
-      int duration = rand() % 6 + 4;
-      std::this_thread::sleep_for(std::chrono::seconds(duration));
       if (_currentPhase == TrafficLightPhase::red)
         _currentPhase = TrafficLightPhase::green;
-      else
+        else
         _currentPhase = TrafficLightPhase::red;
 
       TrafficLightPhase message = _currentPhase;
       _queue.send(std::move(message));
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      /* Reset stop watch for next cycle */
+      last_update = std::chrono::system_clock::now();
+      /* Randomly choose the cycle duration for the next cycle */
+      cycle_duration = distr(eng);
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
 }
 
